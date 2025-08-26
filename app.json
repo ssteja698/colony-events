@@ -1,0 +1,25 @@
+{
+  "expo": {
+    "name": "Colony Events",
+    "slug": "colony-events",
+    "scheme": "colonyevents",
+    "plugins": [
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/notification-icon.png",
+          "color": "#1e293b"
+        }
+      ]
+    ],
+    "android": {
+      "package": "com.example.colonyevents",
+      "useNextNotificationsApi": true
+    },
+    "extra": {
+      "eas": {
+        "projectId": "ecfc004c-c760-4370-a06f-e7e3c47daf4e"
+      }
+    }
+  }
+}
