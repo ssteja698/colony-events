@@ -7,14 +7,13 @@
       [
         "expo-notifications",
         {
-          "icon": "./assets/notification-icon.png",
+          "icon": "./assets/images/react-logo.png",
           "color": "#1e293b"
         }
       ]
     ],
     "android": {
-      "package": "com.example.colonyevents",
-      "useNextNotificationsApi": true
+      "package": "com.example.colonyevents"
     },
     "extra": {
       "eas": {
