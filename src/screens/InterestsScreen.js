@@ -1,13 +1,14 @@
+import { collection, doc, onSnapshot, query, where } from "firebase/firestore";
 import React, { useEffect, useState } from "react";
-import { View, FlatList, Button, Pressable, Text, ActivityIndicator } from "react-native";
-import { auth, db } from "../firebase";
 import {
-  collection,
-  doc,
-  onSnapshot,
-  query,
-  where,
-} from "firebase/firestore";
+  ActivityIndicator,
+  Button,
+  FlatList,
+  Pressable,
+  Text,
+  View,
+} from "react-native";
+import { auth, db } from "../firebase";
 import EventCard from "../ui/EventCard";
 
 export default function InterestsScreen({ navigation }) {
@@ -61,14 +62,20 @@ export default function InterestsScreen({ navigation }) {
         style={{
           flex: 1,
           paddingVertical: 10,
-          borderWidth: 1,
           borderRadius: 8,
           marginHorizontal: 6,
-          backgroundColor: selected ? "#e5e7eb" : "#fff",
+          backgroundColor: selected ? "#2563eb" : "#fff",
+          boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
           alignItems: "center",
         }}
       >
-        <Text>{label}</Text>
+        <Text
+          style={{
+            color: selected ? "#fff" : "#222",
+          }}
+        >
+          {label}
+        </Text>
       </Pressable>
     );
   }
@@ -114,7 +121,9 @@ export default function InterestsScreen({ navigation }) {
           renderItem={({ item }) => (
             <EventCard
               event={item}
-              onPress={() => navigation.navigate("EventDetails", { id: item.id })}
+              onPress={() =>
+                navigation.navigate("EventDetails", { id: item.id })
+              }
             />
           )}
         />

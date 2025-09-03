@@ -1,8 +1,24 @@
-import React, { useState } from "react";
-import { View, TextInput, Button, Text, Pressable, Platform, ActivityIndicator, Alert } from "react-native";
-import { db, auth } from "../firebase";
-import { addDoc, collection, serverTimestamp, getDocs, query, where } from "firebase/firestore";
 import DateTimePicker from "@react-native-community/datetimepicker";
+import {
+  addDoc,
+  collection,
+  getDocs,
+  query,
+  serverTimestamp,
+  where,
+} from "firebase/firestore";
+import React, { useState } from "react";
+import {
+  ActivityIndicator,
+  Alert,
+  Button,
+  Platform,
+  Pressable,
+  Text,
+  TextInput,
+  View,
+} from "react-native";
+import { auth, db } from "../firebase";
 
 const WEEKDAYS = ["M", "T", "W", "T2", "F", "S", "S2"];
 
@@ -89,8 +105,11 @@ export default function CreateEventScreen({ navigation }) {
       return;
     }
 
-    const qDup = query(collection(db, "events"), where("name", "==", name.trim()))
-    const dupSnap = await getDocs(qDup)
+    const qDup = query(
+      collection(db, "events"),
+      where("name", "==", name.trim())
+    );
+    const dupSnap = await getDocs(qDup);
     if (!dupSnap.empty) {
       showAlert("Duplicate name", "An event with this name already exists.");
       return;
@@ -114,8 +133,6 @@ export default function CreateEventScreen({ navigation }) {
 
   return (
     <View style={{ flex: 1, padding: 16 }}>
-      <Text style={{ marginBottom: 6 }}>Creation Type</Text>
-      <Text style={{ marginBottom: 8 }}>Event ▾</Text>
       <TextInput
         placeholder="Event Name"
         style={{ borderWidth: 1, padding: 10, marginBottom: 8 }}
@@ -129,10 +146,18 @@ export default function CreateEventScreen({ navigation }) {
         onChangeText={setDescription}
       />
       <Text style={{ marginBottom: 6 }}>Event Time</Text>
-      <View style={{ flexDirection: "row", alignItems: "center", marginBottom: 8 }}>
+      <View
+        style={{ flexDirection: "row", alignItems: "center", marginBottom: 8 }}
+      >
         <Pressable
           onPress={openPicker}
-          style={{ flex: 1, borderWidth: 1, padding: 12, borderRadius: 6, marginRight: 8 }}
+          style={{
+            flex: 1,
+            borderWidth: 1,
+            padding: 12,
+            borderRadius: 6,
+            marginRight: 8,
+          }}
         >
           <Text>{date.toLocaleString()}</Text>
         </Pressable>

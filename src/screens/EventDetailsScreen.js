@@ -1,14 +1,17 @@
-import React, { useEffect, useState } from "react";
-import { View, Text, Button, ActivityIndicator } from "react-native";
-import { db, auth } from "../firebase";
 import {
+  arrayRemove,
+  arrayUnion,
   doc,
   getDoc,
   updateDoc,
-  arrayRemove,
-  arrayUnion,
 } from "firebase/firestore";
-import { scheduleLocalReminder } from "../services/notifications";
+import React, { useEffect, useState } from "react";
+import { ActivityIndicator, Button, Text, View } from "react-native";
+import { auth, db } from "../firebase";
+import {
+  isLocalReminderScheduled,
+  scheduleLocalReminder,
+} from "../services/notifications";
 
 export default function EventDetailsScreen({ route }) {
   const { id } = route.params;
@@ -29,12 +32,30 @@ export default function EventDetailsScreen({ route }) {
         setIsInterested(interests.includes(id));
       });
     }
+    // Check if reminder is scheduled for this event
+    (async () => {
+      if (eventDate && !isNaN(eventDate.getTime())) {
+        try {
+          const scheduled = await isLocalReminderScheduled(id);
+          setReminderScheduled(!!scheduled);
+        } catch (e) {
+          setReminderScheduled(false);
+        }
+      } else {
+        setReminderScheduled(false);
+      }
+    })();
   }, [id]);
 
   if (!event) return null;
 
-  const eventDate = event.dateTime?.toDate ? event.dateTime.toDate() : new Date(event.dateTime);
-  const isPast = eventDate && !isNaN(eventDate.getTime()) ? eventDate.getTime() < Date.now() : false;
+  const eventDate = event.dateTime?.toDate
+    ? event.dateTime.toDate()
+    : new Date(event.dateTime);
+  const isPast =
+    eventDate && !isNaN(eventDate.getTime())
+      ? eventDate.getTime() < Date.now()
+      : false;
 
   async function addToInterests() {
     setInterestLoading(true);
@@ -53,21 +74,24 @@ export default function EventDetailsScreen({ route }) {
   }
 
   async function remindMe() {
-    await scheduleLocalReminder(
-      eventDate,
-      remind,
-      {
-        title: event.name,
-        body: `Starts in ${remind} min`,
-      }
-    );
+    await scheduleLocalReminder(eventDate, remind, {
+      title: event.name,
+      body: `Starts in ${remind} min`,
+      eventId: id,
+    });
     setReminderScheduled(true);
   }
 
   return (
     <View style={{ flex: 1, padding: 16 }}>
-      <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
-        <Text style={{ fontSize: 22 }}>Event Name</Text>
+      <View
+        style={{
+          flexDirection: "row",
+          justifyContent: "space-between",
+          flexWrap: "wrap",
+        }}
+      >
+        <Text style={{ fontSize: 22, fontWeight: 590 }}>Event Name</Text>
         <Text style={{ fontSize: 22 }}>{event.name}</Text>
       </View>
       <View style={{ height: 8 }} />
@@ -78,9 +102,7 @@ export default function EventDetailsScreen({ route }) {
       <View style={{ height: 8 }} />
       <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
         <Text>Event time</Text>
-        <Text>
-          {eventDate?.toLocaleString?.() || "-"}
-        </Text>
+        <Text>{eventDate?.toLocaleString?.() || "-"}</Text>
       </View>
       <View style={{ height: 8 }} />
       <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
@@ -88,7 +110,10 @@ export default function EventDetailsScreen({ route }) {
         <Text>
           {Array.isArray(event.occursEvery) && event.occursEvery.length
             ? event.occursEvery
-                .map((idx) => ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"][idx])
+                .map(
+                  (idx) =>
+                    ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"][idx]
+                )
                 .join(", ")
             : "Once"}
         </Text>
@@ -106,15 +131,17 @@ export default function EventDetailsScreen({ route }) {
       <View style={{ height: 12 }} />
 
       {isPast && (
-        <Text style={{ color: "#64748b", marginBottom: 12 }}>This event has passed.</Text>
+        <Text style={{ color: "#64748b", marginBottom: 12 }}>
+          This event has passed.
+        </Text>
       )}
 
       {!isPast && isInterested && !reminderScheduled && (
-        <Button title={`Before ${remind} min`} onPress={remindMe} />
+        <Button title={`Remind Before ${remind} min`} onPress={remindMe} />
       )}
       <View style={{ height: 12 }} />
-      {!isPast && (
-        interestLoading ? (
+      {!isPast &&
+        (interestLoading ? (
           <View style={{ paddingVertical: 4 }}>
             <ActivityIndicator />
           </View>
@@ -122,8 +149,7 @@ export default function EventDetailsScreen({ route }) {
           <Button title="Remove from interests" onPress={removeFromInterests} />
         ) : (
           <Button title="Interested?" onPress={addToInterests} />
-        )
-      )}
+        ))}
     </View>
   );
 }

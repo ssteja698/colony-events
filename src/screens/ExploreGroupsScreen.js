@@ -1,6 +1,12 @@
-import React, { useEffect, useState } from "react";
-import { View, FlatList, Pressable, Text, ActivityIndicator } from "react-native";
 import { collection, onSnapshot, query } from "firebase/firestore";
+import React, { useEffect, useState } from "react";
+import {
+  ActivityIndicator,
+  FlatList,
+  Pressable,
+  Text,
+  View,
+} from "react-native";
 import { db } from "../firebase";
 import GroupCard from "../ui/GroupCard";
 
@@ -12,28 +18,40 @@ function Segmented({ leftSelected, onLeft, onRight, leftLabel, rightLabel }) {
         style={{
           flex: 1,
           paddingVertical: 10,
-          borderWidth: 1,
           borderRadius: 8,
           marginRight: 6,
-          backgroundColor: leftSelected ? "#e5e7eb" : "#fff",
+          backgroundColor: leftSelected ? "#2563eb" : "#fff",
           alignItems: "center",
+          boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
         }}
       >
-        <Text>{leftLabel}</Text>
+        <Text
+          style={{
+            color: leftSelected ? "#fff" : "#222",
+          }}
+        >
+          {leftLabel}
+        </Text>
       </Pressable>
       <Pressable
         onPress={onRight}
         style={{
           flex: 1,
           paddingVertical: 10,
-          borderWidth: 1,
           borderRadius: 8,
           marginLeft: 6,
-          backgroundColor: !leftSelected ? "#e5e7eb" : "#fff",
+          backgroundColor: !leftSelected ? "#2563eb" : "#fff",
           alignItems: "center",
+          boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
         }}
       >
-        <Text>{rightLabel}</Text>
+        <Text
+          style={{
+            color: !leftSelected ? "#fff" : "#222",
+          }}
+        >
+          {rightLabel}
+        </Text>
       </Pressable>
     </View>
   );
@@ -80,7 +98,9 @@ export default function ExploreGroupsScreen({ navigation }) {
           renderItem={({ item }) => (
             <GroupCard
               group={item}
-              onPress={() => navigation.navigate("GroupDetails", { id: item.id })}
+              onPress={() =>
+                navigation.navigate("GroupDetails", { id: item.id })
+              }
             />
           )}
         />

@@ -5,6 +5,16 @@
     "scheme": "colonyevents",
     "plugins": [
       [
+        "expo-build-properties",
+        {
+          "android": {
+            "compileSdkVersion": 34,
+            "targetSdkVersion": 34,
+            "javaVersion": 17
+          }
+        }
+      ],
+      [
         "expo-notifications",
         {
           "icon": "./assets/images/react-logo.png",

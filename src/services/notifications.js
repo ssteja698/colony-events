@@ -16,7 +16,8 @@ export async function registerForPushNotificationsAsync() {
   }
   try {
     let token;
-    const { status: existingStatus } = await Notifications.getPermissionsAsync();
+    const { status: existingStatus } =
+      await Notifications.getPermissionsAsync();
     let finalStatus = existingStatus;
     if (existingStatus !== "granted") {
       const { status } = await Notifications.requestPermissionsAsync();
@@ -44,12 +45,29 @@ export async function scheduleLocalReminder(
 ) {
   const triggerDate = new Date(date);
   triggerDate.setMinutes(triggerDate.getMinutes() - minutesBefore);
+  // Attach eventId to data if present
   return Notifications.scheduleNotificationAsync({
     content: {
       title: content.title || "Event reminder",
       body: content.body || "Starting soon",
-      data: content.data || {},
+      data: {
+        ...content.data,
+        eventId: content.data?.eventId || content.eventId,
+      },
     },
     trigger: triggerDate,
   });
+}
+
+// Checks if a local notification is scheduled for a given eventId
+export async function isLocalReminderScheduled(eventId) {
+  try {
+    const all = await Notifications.getAllScheduledNotificationsAsync();
+    return all.some(
+      (n) =>
+        n.content?.data?.eventId === eventId || n.content?.eventId === eventId
+    );
+  } catch (e) {
+    return false;
+  }
 }
